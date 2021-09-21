@@ -108,12 +108,12 @@ $users = Get-ADUser -filter {Enabled -eq $True -and PasswordNeverExpires -eq $Fa
  | Where-Object {$_."ms-DS-ConsistencyGuid" -ne $null} | Select-Object -Property "Name", "UserPrincipalName", "SAMAccountName", `
  @{Name = "PasswordExpiry"; Expression = {[datetime]::FromFileTime($_."msDS-UserPasswordExpiryTimeComputed").ToLongDateString() + " " + [datetime]::FromFileTime($_."msDS-UserPasswordExpiryTimeComputed").ToLongTimeString() }}
 
-If ($Users -eq $null) {
+If ($null -eq $Users) {
     Write-Error "No users found with the selected search criteria."
 }
 
 If ($TestRecipient) {
-    $Users = $Users | Select -First 1
+    $Users = $Users | Select-Object -First 1
 }
 
 #check password expiration date and send email on match
@@ -128,7 +128,7 @@ foreach ($user in $users) {
         $EmailBody += "<p class=MsoNormal>&nbsp;</p><p class=MsoNormal>This is an automated password expiration warning.&nbsp; Your password will expire in <b>$DaysRemaining</b> days on <b>$($User.PasswordExpiry)</b>.</p>`r`n"
 
         $PSO= Get-ADUserResultantPasswordPolicy -Identity $user.SAMAccountName            
-        if ($PSO -ne $null) {
+        if ($null -ne $PSO) {
             $EmailBody += PreparePasswordPolicyMail $PSO.ComplexityEnabled $PSO.MaxPasswordAge.Days $PSO.MinPasswordAge.Days $PSO.MinPasswordLength $PSO.PasswordHistoryCount            
         }
         else {
@@ -142,7 +142,7 @@ foreach ($user in $users) {
         $EmailBody += $footer
          
         If ($AutoSMTPServer) {
-            $SMTPServer = (Resolve-DnsName -Type MX -Name $user.UserPrincipalName.Split("@")[1] | sort Preference)[0].NameExchange
+            $SMTPServer = (Resolve-DnsName -Type MX -Name $user.UserPrincipalName.Split("@")[1] | Sort-Object Preference)[0].NameExchange
         }
 
         If ($TestRecipient) {
