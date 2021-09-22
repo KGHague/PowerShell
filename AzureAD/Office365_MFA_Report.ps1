@@ -6,6 +6,10 @@ Office365 MFA Report
 This script is used to report on all users MFA status in Office365. The following properties are exported 
 DisplayName, UPN, AssignedLicence, Licensed, DefaultMethod, MFA Enabled
 
+.Module Dependencies
+Install-Module -Name MSOnline
+Install-Module -Name importexcel
+
 .EXAMPLE
 .\Office365_MFA_Report.ps1 -ExportPath C:\Temp\
 
@@ -14,6 +18,12 @@ param(
     [parameter(Mandatory)]
     [String]$ExportPath 
     ) 
+
+
+## Module Dependencies
+#Install-Module -Name MSOnline
+#Install-Module -Name importexcel
+
 
 ## Import user list
 $users = Get-MsolUser -All
