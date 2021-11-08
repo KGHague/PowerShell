@@ -17,10 +17,10 @@ function unInstallTeams($path) {
 }
   
 # Remove Teams Machine-Wide Installer
-Write-Host "Removing Teams Machine-wide Installer" -ForegroundColor Yellow
+#Write-Host "Removing Teams Machine-wide Installer" -ForegroundColor Yellow
   
-$MachineWide = Get-WmiObject -Class Win32_Product | Where-Object{$_.Name -eq "Teams Machine-Wide Installer"}
-$MachineWide.Uninstall()
+#$MachineWide = Get-WmiObject -Class Win32_Product | Where-Object{$_.Name -eq "Teams Machine-Wide Installer"}
+#$MachineWide.Uninstall()
   
 # Get all Users
 $Users = Get-ChildItem -Path "$($ENV:SystemDrive)\Users"
@@ -32,10 +32,14 @@ $Users | ForEach-Object {
     $localAppData = "$($ENV:SystemDrive)\Users\$($_.Name)\AppData\Local\Microsoft\Teams"
     $programData = "$($env:ProgramData)\$($_.Name)\Microsoft\Teams"
     If (Test-Path "$($localAppData)\Current\Teams.exe") {
-        unInstallTeams($localAppData)
+        If ([System.Version](Get-Command $($localAppData)\Current\Teams.exe).FileVersionInfo.FileVersion -lt [SystemVersion]"1.3.0.13000") {
+            unInstallTeams($localAppData)
+        }
     }
     elseif (Test-Path "$($programData)\Current\Teams.exe") {
-        unInstallTeams($programData)
+        If ([System.Version](Get-Command $($programData)\Current\Teams.exe).FileVersionInfo.FileVersion -lt [SystemVersion]"1.3.0.13000") {
+            unInstallTeams($programData)
+        }
     }
     else {
         Write-Warning  "Teams installation not found for user $($_.Name)"
