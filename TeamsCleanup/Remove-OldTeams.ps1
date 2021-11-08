@@ -33,11 +33,13 @@ $Users | ForEach-Object {
     $programData = "$($env:ProgramData)\$($_.Name)\Microsoft\Teams"
     If (Test-Path "$($localAppData)\Current\Teams.exe") {
         If ([System.Version](Get-Command $($localAppData)\Current\Teams.exe).FileVersionInfo.FileVersion -lt [SystemVersion]"1.3.0.13000") {
+            Write-Host "Uninstalling $localAppData\Current\Teams.exe version $((Get-Command $($localAppData)\Current\Teams.exe).FileVersionInfo.FileVersion)"
             unInstallTeams($localAppData)
         }
     }
     elseif (Test-Path "$($programData)\Current\Teams.exe") {
         If ([System.Version](Get-Command $($programData)\Current\Teams.exe).FileVersionInfo.FileVersion -lt [SystemVersion]"1.3.0.13000") {
+            Write-Host "Uninstalling $programDataData\Current\Teams.exe version $((Get-Command $($programData)\Current\Teams.exe).FileVersionInfo.FileVersion)"
             unInstallTeams($programData)
         }
     }
