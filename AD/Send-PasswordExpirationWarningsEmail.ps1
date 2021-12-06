@@ -149,7 +149,7 @@ foreach ($user in $users) {
             $Recipient = "$($user.Name) <$TestRecipient>"
         }
         else {
-            $Recipient = "$($user.Name) <$user.UserPrincipalName>"
+            $Recipient = "$($user.Name) <$($user.UserPrincipalName)>"
         }
  
         If (-not $WhatIf.IsPresent) {
